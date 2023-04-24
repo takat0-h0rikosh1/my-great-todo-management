@@ -1,0 +1,171 @@
+openapi: 3.0.0
+paths:
+  /:
+    get:
+      operationId: AppController_getHello
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - health check
+  /todos:
+    get:
+      operationId: TodoController_search
+      summary: Search todos
+      description: >-
+        This endpoint searches for todos based on specified criteria. If no
+        criteria are specified, all todos will be returned. If criteria are
+        specified, only resources that satisfy all criteria will be returned.
+      parameters:
+        - name: title
+          required: false
+          in: query
+          description: 【Supports fuzzy search】The title of the todo to search for
+          schema:
+            type: string
+        - name: description
+          required: false
+          in: query
+          description: 【Supports fuzzy search】The description of the todo to search for
+          schema:
+            type: string
+        - name: dueDateFrom
+          required: false
+          in: query
+          description: The start date of the due date range to search for
+          schema:
+            format: date-time
+            type: string
+        - name: dueDateTo
+          required: false
+          in: query
+          description: The end date of the due date range to search for
+          schema:
+            format: date-time
+            type: string
+        - name: status
+          required: false
+          in: query
+          description: The status of the todo to search for
+          schema:
+            enum:
+              - todo
+              - in progress
+              - completed
+            type: string
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: Internal server error occurred
+      tags: &ref_0
+        - /todos
+    post:
+      operationId: TodoController_create
+      summary: Create todo
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoDto'
+      responses:
+        '204':
+          description: Successfully created
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal server error occurred
+      tags: *ref_0
+  /todos/{id}:
+    put:
+      operationId: TodoController_update
+      summary: Update todo
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTodoDto'
+      responses:
+        '204':
+          description: Successfully updated
+        '400':
+          description: Bad Request
+        '404':
+          description: Resource not found
+        '500':
+          description: Internal server error occurred
+      tags: *ref_0
+    delete:
+      operationId: TodoController_delete
+      summary: Delete todo
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted
+        '404':
+          description: Resource not found
+        '500':
+          description: Internal server error occurred
+      tags: *ref_0
+info:
+  title: Todo App
+  description: Todo app's API Document
+  version: 0.0.1
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    CreateTodoDto:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        dueDate:
+          format: date-time
+          type: string
+        status:
+          type: string
+          enum:
+            - todo
+            - in progress
+            - completed
+      required:
+        - title
+        - status
+    UpdateTodoDto:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        dueDate:
+          format: date-time
+          type: string
+        status:
+          type: string
+          enum:
+            - todo
+            - in progress
+            - completed
+      required:
+        - title
+        - status

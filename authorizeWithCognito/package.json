@@ -1,0 +1,8 @@
+{
+  "name": "temp",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "cognito-at-edge": "^1.4.0"
+  }
+}

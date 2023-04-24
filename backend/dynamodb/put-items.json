@@ -1,0 +1,59 @@
+{
+    "Todos": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "ID": {"S": "uuid1"},
+                    "Title": {"S": "title1"},
+                    "Description": {"S": "description1"},
+                    "Status": {"S": "completed"},
+                    "DueDate": {"S": "2023-04-20"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "ID": {"S": "uuid2"},
+                    "Title": {"S": "title2"},
+                    "Description": {"S": "description2"},
+                    "Status": {"S": "in progress"},
+                    "DueDate": {"S": "2023-04-20"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "ID": {"S": "uuid3"},
+                    "Title": {"S": "title3"},
+                    "Description": {"S": "description3"},
+                    "Status": {"S": "todo"},
+                    "DueDate": {"S": "2023-04-20"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "ID": {"S": "uuid4"},
+                    "Title": {"S": "title4"},
+                    "Description": {"S": "description4"},
+                    "Status": {"S": "completed"},
+                    "DueDate": {"S": "2023-04-20"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "ID": {"S": "uuid5"},
+                    "Title": {"S": "title5"},
+                    "Description": {"S": "description5"},
+                    "Status": {"S": "todo"},
+                    "DueDate": {"S": "2023-04-20"}
+                }
+            }
+        }
+    ]
+}

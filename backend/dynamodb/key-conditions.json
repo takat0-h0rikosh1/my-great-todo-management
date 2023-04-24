@@ -1,0 +1,10 @@
+{
+    "Status": {
+        "AttributeValueList": [
+            {   
+                "S": "done"
+            }   
+        ],  
+        "ComparisonOperator": "EQ"
+    }
+}
