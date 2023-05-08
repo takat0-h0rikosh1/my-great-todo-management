@@ -22,10 +22,11 @@ export class Todo {
   }) {
     if (!obj.id)
       throw new EntityGenerateFailure(`id is required, but actual: ${obj.id}.`);
-    if (!obj.title)
+    if (!obj.title) {
       throw new EntityGenerateFailure(
         `title is required. but actual: ${obj.title}.`,
       );
+    }
     if (!isValidStatus(obj.status))
       throw new EntityGenerateFailure(
         `Specify one of the following statuses: ${Object.values(

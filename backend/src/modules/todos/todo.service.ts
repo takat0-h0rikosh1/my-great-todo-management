@@ -19,8 +19,8 @@ export default class TodoService {
     return this.repository.findBy(condition);
   }
 
-  async create(todo: Todo): Promise<void> {
-    return this.repository.store(todo);
+  async create(todo: Todo): Promise<Todo> {
+    return await this.repository.store(todo).then(() => todo);
   }
 
   async update(request: UpdateTodoRequest): Promise<void> {

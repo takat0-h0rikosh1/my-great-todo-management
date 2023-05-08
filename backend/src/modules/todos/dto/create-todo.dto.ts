@@ -1,11 +1,18 @@
 import { Todo, Status } from '../todo.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsOptional, IsEnum, IsDateString } from 'class-validator';
+import {
+  IsOptional,
+  IsEnum,
+  IsDateString,
+  IsNotEmpty,
+  ValidateIf,
+} from 'class-validator';
+import { IsFuture } from '../../..//validator/date.validator';
 
 export class CreateTodoDto {
   @ApiProperty()
-  @IsDefined()
+  @IsNotEmpty()
   title: string;
 
   @ApiProperty({ required: false })
@@ -14,6 +21,8 @@ export class CreateTodoDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsDateString()
+  @ValidateIf((object, value) => value !== undefined)
+  @IsFuture({ message: 'Due date must be in the future' })
   dueDate?: Date;
 
   @ApiProperty({

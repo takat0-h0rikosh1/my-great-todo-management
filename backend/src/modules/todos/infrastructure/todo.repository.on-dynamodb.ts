@@ -8,12 +8,14 @@ import {
   PutItemCommand,
   DeleteItemCommand,
   QueryCommandInput,
+  GetItemCommand,
 } from '@aws-sdk/client-dynamodb';
 import { mappingToEntity, mappingToRecordModel } from './object.mapper';
-import { ensureDefined } from 'src/common';
+import { ensureDefined } from '../../../utils/ensure-undefined';
 import { SearchTodosRequest } from '../service/request/search-todos.request';
-import DynamoDBException from 'src/modules/todos/exception/dynamodb.exception';
-import EntityNotFoundException from 'src/modules/todos/exception/entity.not-found.exception';
+import DynamoDBException from '../../../modules/todos/exception/dynamodb.exception';
+import EntityNotFoundException from '../../../modules/todos/exception/entity.not-found.exception';
+import { ddbDocClient } from './dynamodb';
 
 export default class TodoRepositoryOnDynamoDB implements TodoRepository {
   constructor(
@@ -36,25 +38,15 @@ export default class TodoRepositoryOnDynamoDB implements TodoRepository {
 
   async findById(id: string): Promise<Todo> {
     const params = {
-      ExpressionAttributeNames: { '#id': 'ID' },
       TableName: this.tableName,
-      ExpressionAttributeValues: {
-        ':id': { S: id },
-      },
-      KeyConditionExpression: '#id = :id',
+      Key: { ID: { S: id } },
     };
-
-    const data = this.ddbDocClient.send(new QueryCommand(params));
-    const entities = await data
-      .then((x) => ensureDefined(x.Items))
-      .then((x) => x.map(mappingToRecordModel))
-      .then((x) => x.map(mappingToEntity));
-
-    if (entities.length === 0) {
-      throw new EntityNotFoundException(id);
+    const result = await ddbDocClient.send(new GetItemCommand(params));
+    if (result.Item) {
+      const todo = mappingToEntity(mappingToRecordModel(result.Item));
+      return todo;
     }
-
-    return entities[0];
+    throw new EntityNotFoundException(id);
   }
 
   async findBy(condition: SearchTodosRequest): Promise<Todo[]> {

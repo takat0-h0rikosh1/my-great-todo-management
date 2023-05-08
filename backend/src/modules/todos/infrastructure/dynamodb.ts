@@ -2,16 +2,13 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
 const isProduction = process.env.NODE_ENV === 'production';
-const localEndpoint = 'http://localhost:8000';
-const region = 'ap-northeast-1';
-
 const config = isProduction
   ? {
-      region: region,
+      region: 'ap-northeast-1',
     }
   : {
       region: 'localhost',
-      endpoint: localEndpoint,
+      endpoint: 'http://localhost:8000',
       credentials: {
         accessKeyId: 'local',
         secretAccessKey: 'local',

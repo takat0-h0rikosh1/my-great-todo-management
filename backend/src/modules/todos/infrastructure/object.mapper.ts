@@ -1,4 +1,5 @@
 import { Todo, Status } from '../todo.entity';
+import { TodoRecord } from './todo.record';
 
 export const mappingToRecordModel = (record: Record<string, any>) => {
   const todoRecord: TodoRecord = {

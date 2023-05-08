@@ -123,8 +123,8 @@ paths:
           description: Internal server error occurred
       tags: *ref_0
 info:
-  title: Todo App
-  description: Todo app's API Document
+  title: my-great-todo-management API
+  description: API for my-great-todo-management
   version: 0.0.1
   contact: {}
 tags: []
