@@ -42,7 +42,7 @@ export function IsBefore(
           const [relatedPropertyName] = args.constraints;
           const relatedValue = (args.object as any)[relatedPropertyName];
           if (value && relatedValue) {
-            return value < relatedValue;
+            return value <= relatedValue;
           }
           return true;
         },
