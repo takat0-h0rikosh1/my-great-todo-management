@@ -9,20 +9,9 @@ const useDeleteTodo = () => {
   const formState = useRecoilValue(searchFormState);
 
   const doDeleteTodo = async (id: string) => {
-    todoServiceOnRestAPI.delete(id).then(() => {
-      todoServiceOnRestAPI.fetchTodos().then((x) => {
-        setTodos(x);
-      });
-    });
-
-    try {
-      await todoServiceOnRestAPI.delete(id);
-      const deletedTodos = await todoServiceOnRestAPI.searchTodos(formState);
-      setTodos(deletedTodos);
-    } catch (error) {
-      console.error(error);
-      throw new Error("Failed to delete todo.");
-    }
+    await todoServiceOnRestAPI.delete(id);
+    const deletedTodos = await todoServiceOnRestAPI.searchTodos(formState);
+    setTodos(deletedTodos);
   };
 
   return doDeleteTodo;
