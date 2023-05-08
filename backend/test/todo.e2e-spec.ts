@@ -194,6 +194,22 @@ describe('TodoController (e2e)', () => {
         expect.objectContaining({ id: todo3.id }),
       );
     });
+
+    it('should return bad request when dueDateFrom is a future date than dueDateTo', async () => {
+      const dueDateFrom = new Date('2023-05-01');
+      const dueDateTo = new Date('2023-04-01');
+
+      const response = await request(app.getHttpServer()).get('/todos').query({
+        dueDateFrom: dueDateFrom.toISOString(),
+        dueDateTo: dueDateTo.toISOString(),
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('statusCode', 400);
+      expect(response.body).toHaveProperty('message', [
+        'dueDateTo must be after dueDateFrom',
+      ]);
+    });
   });
 
   describe('/todos (POST)', () => {
