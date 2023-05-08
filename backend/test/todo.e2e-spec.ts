@@ -14,7 +14,7 @@ import {
   PutItemCommand,
 } from '@aws-sdk/client-dynamodb';
 import { Status, Todo } from '../src/modules/todos/todo.entity';
-import { getTodayISOString } from '../src/utils/date.utility';
+import { getTodayISOString, getTodayString } from '../src/utils/date.utility';
 import { tableName } from '../src/modules/todos/todo.config';
 import { ScanCommand } from '@aws-sdk/lib-dynamodb';
 import {
@@ -294,7 +294,7 @@ describe('TodoController (e2e)', () => {
       const newTodo = {
         title: 'New todo',
         description: 'New todo description',
-        dueDate: '2023-05-15T10:00:00.000Z',
+        dueDate: getTodayISOString(),
         status: Status.IN_PROGRESS,
       };
 
@@ -307,7 +307,7 @@ describe('TodoController (e2e)', () => {
         ...createdTodo.body,
         title: 'Updated todo',
         description: 'Updated todo description',
-        dueDate: '2023-05-20T00:00:00.000Z',
+        dueDate: getTodayISOString(),
         status: Status.COMPLETED,
       };
 
@@ -329,7 +329,7 @@ describe('TodoController (e2e)', () => {
     it('should return 400 if title is not provided', async () => {
       const newTodo = {
         description: 'New todo description',
-        dueDate: '2023-05-15T10:00:00.000Z',
+        dueDate: getTodayISOString(),
         status: Status.COMPLETED,
       };
 
@@ -340,7 +340,7 @@ describe('TodoController (e2e)', () => {
       const newTodo = {
         title: 'New todo',
         description: 'New todo description',
-        dueDate: '2021-05-15T10:00:00.000Z',
+        dueDate: new Date('2023-01-01'),
         status: Status.COMPLETED,
       };
 
@@ -368,7 +368,7 @@ describe('TodoController (e2e)', () => {
         title: 'test title',
         description: 'test description',
         status: Status.TODO,
-        dueDate: new Date('2023-01-01'),
+        dueDate: new Date(getTodayString()),
       });
       await createTodoInDb(todo);
       createdTodo = todo;
