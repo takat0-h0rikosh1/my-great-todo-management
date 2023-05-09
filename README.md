@@ -32,7 +32,9 @@
 
 ## API仕様
 
-![swagger-spec.yaml](https://github.com/takat0-h0rikosh1/my-great-todo-management/blob/main/backend/swagger-spec.yaml)の中身を https://editor-next.swagger.io/ に貼り付けるなどして見ていただくのが良いかもしれません。
+[swagger-spec.yaml](https://github.com/takat0-h0rikosh1/my-great-todo-management/blob/main/backend/swagger-spec.yaml)の中身を https://editor-next.swagger.io/ に貼り付けるなどして見ていただくのが良いかもしれません。
+
+お手元の環境で確認する場合は後段に手順の記載があるのでそちらをご参照ください。
 
 ## 開発の準備
 
@@ -51,11 +53,18 @@ make ddb-migration
 yarn install
 
 # start nestjs
-yarn run start:dev
+yarn start:dev
 ```
 
 - http://localhost:3000 で立ち上がります。
 - http://localhost:3000/api で swagger ui に遷移します。
+
+
+以下のコマンドで e2e テストが走ります。
+
+```sh
+yarn test:e2e
+```
 
 #### Frontend
 
