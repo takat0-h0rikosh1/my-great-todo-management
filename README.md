@@ -136,10 +136,10 @@ Lambda@Edgeがバージニア北部リージョンでしか構成できなかっ
 
 ## Clean up
 
-1. cloudfront の管理画面から Lambda@Edge の関連付け削除してください
+1. Lambda@EdgeのCloudFrontのトリガーを削除する
 2. 以下のコマンドを順に実施してください
    - ```sh
-     sls remove --config serverless-virginia.yml
      sls remove
+     sls remove --config serverless-virginia.yml
      ``` 
    - 失敗したら CloudFormation のスタックを直接消してください
