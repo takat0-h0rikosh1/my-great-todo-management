@@ -5,7 +5,7 @@ frameworkVersion: "3"
 package:
   patterns:
     - "!./**"
-    - authorizeWithCognito/index.js
+    - authorizeWithCognito/index.mjs
     - authorizeWithCognito/node_modules/**
 
 custom:
