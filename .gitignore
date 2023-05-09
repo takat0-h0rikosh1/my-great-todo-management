@@ -4,4 +4,4 @@ jspm_packages
 
 # Serverless directories
 .serverless
-authorizeWithCognito/index.js
+authorizeWithCognito/index.mjs
