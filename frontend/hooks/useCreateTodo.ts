@@ -23,10 +23,9 @@ const useCreateTodo = () => {
         setTodos(createdTodos);
       } catch (error) {
         console.error(error);
-        throw new Error("Failed to create todo.");
       }
     } else {
-      throw new Error("Failed to create a todo. The form values are invalid.");
+      console.error("Failed to create a todo. The form values are invalid.");
     }
   };
 

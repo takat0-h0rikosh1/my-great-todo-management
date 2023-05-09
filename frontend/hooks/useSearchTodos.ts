@@ -8,7 +8,7 @@ const useSearchTodos = () => {
       return await todoServiceOnRestAPI.searchTodos(data);
     } catch (error) {
       console.error(error);
-      throw new Error("Failed to search todos.");
+      return [] as Todo[];
     }
   };
 

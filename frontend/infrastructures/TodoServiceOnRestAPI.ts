@@ -13,20 +13,30 @@ class TodoServiceOnRestAPI {
   }
 
   async fetchTodos(): Promise<Todo[]> {
-    const response = await fetch(this.apiUrl, {
+    const url = this.apiUrl;
+    const params = {
       headers: {
         Authorization: this.authorization,
       },
-    });
+    };
 
-    if (!response.ok) {
+    try {
+      const response = await fetch(url, params);
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch todos. Response status: ${response.status}`
+        );
+      }
+
+      return response.json().then((items) => {
+        const todos = items.map((x: any) => new Todo(x));
+        return todos as Todo[];
+      });
+    } catch (error) {
       throw new Error(
-        `Failed to fetch todo list. Response status: ${response.status}`
+        "Unable to connect to the server. Please try again later."
       );
     }
-
-    const data = await response.json();
-    return data.map((x: any) => new Todo(x)) as Todo[];
   }
 
   async searchTodos(condition: {
@@ -36,28 +46,38 @@ class TodoServiceOnRestAPI {
     dueDateTo?: Date;
     status?: Status;
   }): Promise<Todo[]> {
-    const queryParams = Object.entries(condition)
+    const queryString = Object.entries(condition)
       .filter(([_, value]) => value !== undefined)
       .map(([key, value]) => {
         const v = value instanceof Date ? new Date(value).toISOString() : value;
         return `${encodeURIComponent(key)}=${encodeURIComponent(v)}`;
       })
       .join("&");
-
-    const response = await fetch(`${this.apiUrl}?${queryParams}`, {
+    const url = `${this.apiUrl}?${queryString}`;
+    const params = {
       headers: {
         Authorization: this.authorization,
       },
-    });
+    };
 
-    if (!response.ok) {
+    try {
+      const response = await fetch(url, params);
+      if (!response.ok) {
+        throw new Error(
+          `Failed to search todos. Response status: ${response.status}`
+        );
+      }
+
+      return response.json().then((items) => {
+        const todos = items.map((x: any) => new Todo(x));
+        return todos as Todo[];
+      });
+    } catch (error) {
+      console.error(error);
       throw new Error(
-        `Failed to search todos. Response status: ${response.status}`
+        "Unable to connect to the server. Please try again later."
       );
     }
-
-    const data = await response.json();
-    return data.map((x: any) => new Todo(x)) as Todo[];
   }
 
   async createTodo(data: {
@@ -66,53 +86,80 @@ class TodoServiceOnRestAPI {
     status: Status;
     dueDate?: Date;
   }): Promise<void> {
-    return fetch(this.apiUrl, {
+    const url = this.apiUrl;
+    const params = {
       method: "POST",
       headers: {
         Authorization: this.authorization,
         "Content-Type": JSON_CONTENT_TYPE,
       },
       body: JSON.stringify(data),
-    }).then((response) => {
+    };
+
+    try {
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(
           `Failed to create todo. Response status: ${response.status}`
         );
       }
-    });
+    } catch (error) {
+      console.error(error);
+      throw new Error(
+        "Unable to connect to the server. Please try again later."
+      );
+    }
   }
 
   async updateTodo(todo: Todo): Promise<void> {
-    return fetch(`${this.apiUrl}/${todo.id}`, {
+    const url = `${this.apiUrl}/${todo.id}`;
+    const params = {
       method: "PUT",
       headers: {
         Authorization: this.authorization,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(todo),
-    }).then((response) => {
+    };
+
+    try {
+      const response = await fetch(url, params);
       if (!response.ok) {
         throw new Error(
-          `"failed update todo. response status: ${response.statusText}`
+          `"failed update todo. response status: ${response.status}`
         );
       }
-    });
+    } catch (error) {
+      console.error(error);
+      throw new Error(
+        "Unable to connect to the server. Please try again later."
+      );
+    }
   }
 
   async delete(id: string): Promise<void> {
-    return fetch(`${this.apiUrl}/${id}`, {
+    const url = `${this.apiUrl}/${id}`;
+    const params = {
       method: "DELETE",
       headers: {
         Authorization: this.authorization,
         "Content-Type": "application/json",
       },
-    }).then((response) => {
+    };
+
+    try {
+      const response = await fetch(url, params);
       if (!response.ok) {
         throw new Error(
-          `"failed delete todo. response status: ${response.statusText}`
+          `"failed delete todo. response status: ${response.status}`
         );
       }
-    });
+    } catch (error) {
+      console.error(error);
+      throw new Error(
+        "Unable to connect to the server. Please try again later."
+      );
+    }
   }
 }
 

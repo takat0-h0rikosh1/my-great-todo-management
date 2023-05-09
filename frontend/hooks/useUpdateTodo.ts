@@ -18,10 +18,9 @@ const useUpdateTodo = () => {
         setTodos(updatedTodos);
       } catch (error) {
         console.error(error);
-        throw new Error("Failed to update todo.");
       }
     } else {
-      throw new Error("Failed to update a todo. The form values are invalid.");
+      console.error("Failed to update a todo. The form values are invalid.");
     }
   };
 

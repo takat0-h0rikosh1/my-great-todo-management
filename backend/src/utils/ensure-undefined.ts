@@ -1,6 +1,9 @@
-export const ensureDefined = <T>(value: T | undefined) => {
+export const ensureDefinedWith = <T>(
+  value: T | undefined,
+  func: (arg: T) => void,
+) => {
   if (value === undefined) {
-    throw new Error('Unexpected undefined value');
+    func(value);
   }
   return value;
 };

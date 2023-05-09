@@ -11,10 +11,9 @@ import {
   GetItemCommand,
 } from '@aws-sdk/client-dynamodb';
 import { mappingToEntity, mappingToRecordModel } from './object.mapper';
-import { ensureDefined } from '../../../utils/ensure-undefined';
+import { ensureDefinedWith } from '../../../utils/ensure-undefined';
 import { SearchTodosRequest } from '../service/request/search-todos.request';
 import DynamoDBException from '../../../modules/todos/exception/dynamodb.exception';
-import EntityNotFoundException from '../../../modules/todos/exception/entity.not-found.exception';
 import { ddbDocClient } from './dynamodb';
 
 export default class TodoRepositoryOnDynamoDB implements TodoRepository {
@@ -25,35 +24,58 @@ export default class TodoRepositoryOnDynamoDB implements TodoRepository {
     private tableName: string,
   ) {}
 
+  // @deprecated: フルスキャンするので要注意!!!
   async findAll(): Promise<Todo[]> {
     const params = {
       TableName: this.tableName,
     };
-    const data = this.ddbDocClient.send(new ScanCommand(params));
-    return data
-      .then((x) => ensureDefined(x.Items))
-      .then((x) => x.map(mappingToRecordModel))
-      .then((x) => x.map(mappingToEntity));
+    const command = new ScanCommand(params);
+
+    try {
+      const result = await this.ddbDocClient.send(command);
+
+      if (result.Items) {
+        const records = result.Items.map(mappingToRecordModel);
+        return records.map(mappingToEntity);
+      }
+
+      return [] as Todo[];
+    } catch (error) {
+      throw new DynamoDBException(
+        `Failed to retrieve data: ${JSON.stringify(params)}`,
+        error,
+      );
+    }
   }
 
-  async findById(id: string): Promise<Todo> {
+  async findById(id: string): Promise<Todo | undefined> {
     const params = {
       TableName: this.tableName,
       Key: { ID: { S: id } },
     };
-    const result = await ddbDocClient.send(new GetItemCommand(params));
-    if (result.Item) {
-      const todo = mappingToEntity(mappingToRecordModel(result.Item));
-      return todo;
+    const command = new GetItemCommand(params);
+
+    try {
+      const result = await ddbDocClient.send(command);
+      if (result.Item) {
+        const record = mappingToRecordModel(result.Item);
+        return mappingToEntity(record);
+      }
+    } catch (error) {
+      console.error(error);
+      throw new DynamoDBException(
+        `Failed to retrieve data: ${JSON.stringify(params)}`,
+        error,
+      );
     }
-    throw new EntityNotFoundException(id);
   }
 
+  // TODO: pagenation
   async findBy(condition: SearchTodosRequest): Promise<Todo[]> {
     const { title, description, status, dueDateFrom, dueDateTo } = condition;
     const statuses = status !== undefined ? [status] : Object.values(Status);
 
-    const queryCommandInputList = statuses.map((x) => {
+    const queryCommands = statuses.map((x) => {
       const params = this.buildQueryCommandInput('Status', x, 'StatusIndex');
       const filterExpressions = [];
       if (description) {
@@ -91,23 +113,26 @@ export default class TodoRepositoryOnDynamoDB implements TodoRepository {
       return params;
     });
 
-    const queryResults = queryCommandInputList.map((x) => {
-      return this.ddbDocClient
-        .send(new QueryCommand(x))
-        .then((data) => ensureDefined(data.Items))
-        .then((items) => items.map(mappingToRecordModel))
-        .then((recordModels) => recordModels.map(mappingToEntity));
-    });
-
-    return Promise.all(queryResults)
-      .then((results) => results.flat())
-      .catch((error) => {
-        console.error(error);
-        const message = `Failed to search data: ${JSON.stringify(
-          queryCommandInputList,
-        )}`;
-        return Promise.reject(new DynamoDBException(message, error));
+    try {
+      const results = queryCommands.map(async (command) => {
+        const data = await this.ddbDocClient.send(new QueryCommand(command));
+        const items = ensureDefinedWith(data.Items, () => {
+          throw new DynamoDBException(
+            `Failed to search data: ${JSON.stringify(command)}`,
+          );
+        });
+        const recordModels = items.map(mappingToRecordModel);
+        return recordModels.map(mappingToEntity);
       });
+      const nested = await Promise.all(results);
+      const todos = nested.flat();
+      return todos;
+    } catch (error) {
+      throw new DynamoDBException(
+        `Failed to search data: ${JSON.stringify(queryCommands)}`,
+        error,
+      );
+    }
   }
 
   async store(todo: Todo): Promise<void> {
@@ -127,13 +152,11 @@ export default class TodoRepositoryOnDynamoDB implements TodoRepository {
       params.Item['DueDate'] = { S: todo.formatDueDate };
     }
 
-    await this.ddbDocClient.send(new PutItemCommand(params)).catch((e) => {
-      console.error(e);
-      return Promise.reject(
-        new DynamoDBException(
-          `Failed to store data: ${JSON.stringify(params)}`,
-          e,
-        ),
+    const command = new PutItemCommand(params);
+    await this.ddbDocClient.send(command).catch((error) => {
+      throw new DynamoDBException(
+        `Failed to store data: ${JSON.stringify(params)}`,
+        error,
       );
     });
   }
@@ -146,9 +169,9 @@ export default class TodoRepositoryOnDynamoDB implements TodoRepository {
       },
       ConditionExpression: 'attribute_exists(ID)',
     };
+    const command = new DeleteItemCommand(params);
 
-    await this.ddbDocClient.send(new DeleteItemCommand(params)).catch((e) => {
-      console.error(e);
+    await this.ddbDocClient.send(command).catch((e) => {
       throw new DynamoDBException(
         `Failed to delete data: ${JSON.stringify(params)}`,
         e,
