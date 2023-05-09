@@ -17,6 +17,9 @@
 - API Document
   - Swagger
 
+## アーキテクチャ
+
+![my-great-todo drawio](https://user-images.githubusercontent.com/17715952/236977697-7d4d2d58-8afe-4552-a79c-a07b95a2159f.png)
 
 ## プロジェクト構成
 
