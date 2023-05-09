@@ -137,3 +137,14 @@ sls deploy --config serverless-virginia.yml
    2. 関数タイプにLambda@Edgeを選択
    3. 先程控えたLambdaのバージョン付きARNを入力
    4. 変更を保存をクリック
+
+
+## Clean up
+
+1. cloudfront の管理画面から Lambda@Edge の関連付け削除してください
+2. 以下のコマンドを順に実施してください
+   - ```sh
+     sls remove --config serverless-virginia.yml
+     sls remove
+     ``` 
+   - 失敗したら CloudFormation のスタックを直接消してください

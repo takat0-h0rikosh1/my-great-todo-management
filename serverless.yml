@@ -4,7 +4,6 @@ frameworkVersion: "3"
 
 plugins:
   - serverless-s3-sync
-  - serverless-s3-remover
 
 package:
   individually: true
@@ -12,8 +11,6 @@ package:
     - "!./**"
 
 custom:
-  remover:
-    - ${self.provider.deploymentBucket}
   s3Sync:
     - bucketName: ${self:service}-${sls:stage}
       localDir: frontend/out
