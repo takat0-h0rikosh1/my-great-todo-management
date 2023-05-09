@@ -85,31 +85,27 @@ http://localhost:3001 で立ち上がります。
 
 ## デプロイ
 
-### アプリケーション
+### 各種コマンド実行
 
 プロジェクトのルートディレクトリで作業してください。  
-`serverless.yml` の定義を反映します。 
 
 ```sh
 # configure aws credentials
 export AWS_PROFILE=my-profile
 
-# deploy application resources
-make deploy
+# deploy application resources. The stage is set to 'dev' by default.
+make deploy stage=${env}
 
 # 【optional】insert dummy data to dynamodb
 cd backend
 make ddb-batch-write-test-data
 ```
 
-### 認証基盤
+### AWSコンソール作業
 
-プロジェクトのルートディレクトリで作業してください。  
-`serverless-virginia.yml` の定義を反映します。
+ここではCognitoへ認証リクエストを行うLambda@Edgeとコンテンツを配信するCloudFrontとの関連付けを行います。
 
-ここではCognitoへ認証リクエストを行うLambda@EdgeのデプロイとCloudFrontへの関連付けを行います。
-
-Lambda@Edgeがバージニア北部リージョンでしか構成できなかった都合でデプロイ作業のステップが別れています。
+Lambda@Edgeがバージニア北部リージョンでしか構成できなかった都合でこのようなマニュアル作業が発生してしまっています。
 
 もう少し良いやり方がないかどうかは要調査...。Lambda@Edgeが東京リージョンでサポートしてくれたら全て解決するのですが...。
 
@@ -118,28 +114,24 @@ Lambda@Edgeがバージニア北部リージョンでしか構成できなかっ
 以降の作業は以下のシチュエーションで作業が必要になることに注意。
 
 - 初回のデプロイ作業
+- Lambdaのソースを更新したとき
 - CloudFrontのディストリビューションを変更したとき
-- Cognitoのユーザープールやアプリクライアントを変更したとき
 
 単にアプリケーションを更新したい場合はこの作業は不要です。
 
 #### 実作業
 
-```sh
-sls deploy --config serverless-virginia.yml
-```
-
-上記が終わったら以下の作業を実施してください。
-
-1. デプロイしたLambdaのバージョン付きARNをメモしておく
-1. AWSのコンソールにてCloudFrontの管理画面を開く
+1. [Lambdaの管理画面(region=us-east-1)](https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions)を開く
+1. デプロイしたLambdaを選択
 1. アプリケーションのデプロイ作業で作成したディストリビューションの詳細画面へ移動
-1. すでに作成されているビヘイビアの編集画面へ移動
-1. 関数の関連付けを行う
-   1. イベントはビューワーリクエスト
-   2. 関数タイプにLambda@Edgeを選択
-   3. 先程控えたLambdaのバージョン付きARNを入力
-   4. 変更を保存をクリック
+1. 関数の概要のトリガーを追加を選択
+1. ソースを選択でCloudFrontを選択
+1. Lambda@Edgeへのデプロイをクリック
+1. 新しい CloudFront のトリガーの設定を選択（すでにトリガーがある場合は既存のトリガーを使用でも良い）
+1. 入力フォーム更新
+   1. ディストリビューションでSPAを配信するCloudFrontを選択
+   2. Lambda@Edgeへのデプロイを確認にチェックを入れる
+2. デプロイをクリック
 
 
 ## Clean up

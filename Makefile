@@ -36,4 +36,4 @@ gen-authorizer-jsfile:
 	sed -e s/USER_POOL_ID/$$COGNITO_USER_POOL_ID/g \
 		-e s/USER_POOL_APP_ID/$$COGNITO_USER_POOL_APP_CLIENT_ID/g \
 		-e s/USER_POOL_DOMAIN/$$COGNITO_USER_POOL_DOMAIN/g \
-		./authorizeWithCognito/index.template.js > ./authorizeWithCognito/index.js
+		./authorizeWithCognito/index.template.js > ./authorizeWithCognito/index.mjs
