@@ -97,7 +97,7 @@ class TodoServiceOnRestAPI {
     };
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, params);
       if (!response.ok) {
         throw new Error(
           `Failed to create todo. Response status: ${response.status}`
