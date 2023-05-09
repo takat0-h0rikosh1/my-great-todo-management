@@ -7,7 +7,7 @@ const useFetchTodos = () => {
       return await todoServiceOnRestAPI.fetchTodos();
     } catch (error) {
       console.error(error);
-      [] as Todo[];
+      return [] as Todo[];
     }
   };
 
